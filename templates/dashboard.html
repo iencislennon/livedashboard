@@ -1,0 +1,158 @@
+{{define "content"}}
+<div class="topbar">
+	<div class="title">DASHBOARD</div>
+	<div class="right">
+		<span class="welcome-text">Welcome back</span>
+		<div class="avatar"></div>
+		<span class="settings-icon">⚙️</span>
+	</div>
+</div>
+
+<div class="section-grid">
+	<div class="section-card" hx-get="/studies" hx-target="#content" hx-push-url="true">
+		<img src="/assets/studies.jpg" alt="Studies">
+		<div class="overlay"></div>
+		<div class="label">Studies</div>
+	</div>
+	<div class="section-card" hx-get="/aiwork" hx-target="#content" hx-push-url="true">
+		<img src="/assets/aiwork.jpg" alt="AI / Work">
+		<div class="overlay"></div>
+		<div class="label">AI / Work</div>
+	</div>
+	<div class="section-card" hx-get="/health" hx-target="#content" hx-push-url="true">
+		<img src="/assets/health.jpg" alt="Health & Beauty">
+		<div class="overlay"></div>
+		<div class="label">Health &amp; Beauty</div>
+	</div>
+	<div class="section-card" hx-get="/other" hx-target="#content" hx-push-url="true">
+		<img src="/assets/other.jpg" alt="All the other stuff">
+		<div class="overlay"></div>
+		<div class="label">All the Other Stuff</div>
+	</div>
+</div>
+
+<div class="widget-grid">
+
+	<div class="rpg-card">
+		<div class="corner-tr"></div><div class="corner-bl"></div>
+		<div class="card-title">Calendar</div>
+		<div class="calendar-month-label" id="calendar-month-label"></div>
+		<div class="calendar-grid" id="calendar-grid"></div>
+	</div>
+
+	<div class="rpg-card">
+		<div class="corner-tr"></div><div class="corner-bl"></div>
+		<div class="card-title">Weather</div>
+		<div class="weather-row">
+			<div>
+				<div class="weather-city">Almaty</div>
+				<div class="weather-temp">21°C</div>
+			</div>
+			<div class="weather-icon">🌤️</div>
+		</div>
+		<div style="margin-top:8px;opacity:0.8;">Partly Cloudy ☀️</div>
+	</div>
+
+	<div class="rpg-card">
+		<div class="corner-tr"></div><div class="corner-bl"></div>
+		<div class="card-title">Reminder To</div>
+		<div class="reminder-row">
+			<span class="heart-icon">♡</span>
+			{{template "reminder" .Reminder}}
+		</div>
+	</div>
+
+	<div class="rpg-card span-2">
+		<div class="corner-tr"></div><div class="corner-bl"></div>
+		<div class="card-title">Stats</div>
+		<canvas id="statsRadar" height="200"></canvas>
+		<div class="sliders">
+			{{range .Stats}}
+			<div class="slider-row">
+				<span style="width:60px;">{{.Label}}</span>
+				<input type="range" min="0" max="10" value="{{.Value}}" class="stat-slider"
+					data-id="{{.ID}}" data-label="{{.Label}}"
+					oninput="statSliderChanged(this)"
+					hx-post="/stats/{{.ID}}" hx-trigger="change" hx-swap="none" hx-vals="js:{value: event.target.value}">
+			</div>
+			{{end}}
+		</div>
+	</div>
+
+	<div class="rpg-card">
+		<div class="corner-tr"></div><div class="corner-bl"></div>
+		<div class="card-title">Spotify</div>
+		<div class="spotify-card">
+			<div class="spotify-note">♪</div>
+			<div class="spotify-meta">
+				<div>Lo-Fi Focus Mix</div>
+				<div style="opacity:0.6;font-size:0.8rem;">Playlist</div>
+			</div>
+			<div class="spotify-controls">
+				<button type="button" data-playing="false" onclick="spotifyToggle(this)">▶</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="rpg-card span-2">
+		<div class="corner-tr"></div><div class="corner-bl"></div>
+		<div class="card-title">Todo List</div>
+		<form class="todo-form" hx-post="/todos" hx-target="#todo-list" hx-swap="beforeend" hx-on::after-request="this.reset()">
+			<input type="text" name="text" placeholder="Add a task..." required>
+			<button type="submit">Add</button>
+		</form>
+		<ul class="todo-list" id="todo-list">
+			{{range .Todos}}
+			<li class="{{if .Done}}done{{end}}" id="todo-{{.ID}}">
+				<input type="checkbox" class="todo-check" {{if .Done}}checked{{end}}
+					hx-post="/todos/{{.ID}}/toggle" hx-target="#todo-{{.ID}}" hx-swap="outerHTML">
+				<span class="todo-text">{{.Text}}</span>
+				<button type="button" class="btn-small btn-danger" hx-delete="/todos/{{.ID}}" hx-target="#todo-{{.ID}}" hx-swap="outerHTML swap:0.15s">✕</button>
+			</li>
+			{{end}}
+		</ul>
+	</div>
+
+</div>
+
+<script>
+(function() {
+	const ctx = document.getElementById('statsRadar');
+	const labels = [{{range .Stats}}"{{.Label}}",{{end}}];
+	const values = [{{range .Stats}}{{.Value}},{{end}}];
+	window.statsChart = new Chart(ctx, {
+		type: 'radar',
+		data: {
+			labels: labels,
+			datasets: [{
+				label: 'Stats',
+				data: values,
+				backgroundColor: 'rgba(192, 132, 252, 0.25)',
+				borderColor: '#C084FC',
+				pointBackgroundColor: '#00E5FF'
+			}]
+		},
+		options: {
+			scales: {
+				r: {
+					min: 0, max: 10,
+					ticks: { color: '#E2E8F0', backdropColor: 'transparent' },
+					grid: { color: 'rgba(0,229,255,0.15)' },
+					angleLines: { color: 'rgba(0,229,255,0.15)' },
+					pointLabels: { color: '#00E5FF' }
+				}
+			},
+			plugins: { legend: { display: false } }
+		}
+	});
+})();
+
+function statSliderChanged(el) {
+	const idx = Array.from(document.querySelectorAll('.stat-slider')).indexOf(el);
+	window.statsChart.data.datasets[0].data[idx] = parseInt(el.value, 10);
+	window.statsChart.update();
+}
+</script>
+{{end}}
+
+{{define "reminder"}}<input type="text" id="reminder-input" name="content" value="{{.}}" hx-post="/reminder" hx-target="#reminder-input" hx-swap="outerHTML" hx-trigger="blur">{{end}}

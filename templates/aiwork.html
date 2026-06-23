@@ -1,0 +1,116 @@
+{{define "content"}}
+<div class="back-link" hx-get="/" hx-target="#content" hx-push-url="true">← Dashboard</div>
+<div class="topbar">
+	<div class="title">AI / WORK</div>
+</div>
+
+<div class="panel-grid">
+
+	<div class="rpg-card">
+		<div class="corner-tr"></div><div class="corner-bl"></div>
+		<div class="card-title">Arsenal of Development</div>
+		<table class="edit-table">
+			<thead><tr><th>Name</th><th>Repo</th><th>Claude Chat</th><th>URL</th><th></th></tr></thead>
+			<tbody id="devproject-rows">
+				{{range .DevProjects}}
+				<tr id="devproject-{{.ID}}">
+					<td><input type="text" value="{{.Name}}" name="name" hx-put="/devprojects/{{.ID}}" hx-include="closest tr" hx-trigger="blur" hx-swap="none" placeholder="Name"></td>
+					<td><input type="url" value="{{.RepoURL}}" name="repo_url" hx-put="/devprojects/{{.ID}}" hx-include="closest tr" hx-trigger="blur" hx-swap="none" placeholder="Repo link"></td>
+					<td><input type="url" value="{{.ClaudeURL}}" name="claude_url" hx-put="/devprojects/{{.ID}}" hx-include="closest tr" hx-trigger="blur" hx-swap="none" placeholder="Claude chat link"></td>
+					<td><input type="url" value="{{.OtherURL}}" name="other_url" hx-put="/devprojects/{{.ID}}" hx-include="closest tr" hx-trigger="blur" hx-swap="none" placeholder="URL"></td>
+					<td><button type="button" class="btn-small btn-danger" hx-delete="/devprojects/{{.ID}}" hx-target="#devproject-{{.ID}}" hx-swap="outerHTML swap:0.15s">✕</button></td>
+				</tr>
+				{{end}}
+			</tbody>
+		</table>
+		<button type="button" class="btn-cyan btn-small" style="margin-top:8px;" hx-post="/devprojects" hx-target="#devproject-rows" hx-swap="beforeend">+ Add</button>
+	</div>
+
+	<div class="rpg-card">
+		<div class="corner-tr"></div><div class="corner-bl"></div>
+		<div class="card-title">Arcane Knowledge</div>
+		<table class="edit-table">
+			<thead><tr><th>Title</th><th>Topic</th><th>Link</th><th></th></tr></thead>
+			<tbody id="knowledge-rows">
+				{{range .Knowledge}}
+				<tr id="knowledge-{{.ID}}">
+					<td><input type="text" value="{{.Title}}" name="title" hx-put="/knowledge/{{.ID}}" hx-include="closest tr" hx-trigger="blur" hx-swap="none" placeholder="Title"></td>
+					<td><input type="text" value="{{.Topic}}" name="topic" hx-put="/knowledge/{{.ID}}" hx-include="closest tr" hx-trigger="blur" hx-swap="none" placeholder="Topic"></td>
+					<td><input type="url" value="{{.Link}}" name="link" hx-put="/knowledge/{{.ID}}" hx-include="closest tr" hx-trigger="blur" hx-swap="none" placeholder="Link"></td>
+					<td><button type="button" class="btn-small btn-danger" hx-delete="/knowledge/{{.ID}}" hx-target="#knowledge-{{.ID}}" hx-swap="outerHTML swap:0.15s">✕</button></td>
+				</tr>
+				{{end}}
+			</tbody>
+		</table>
+		<button type="button" class="btn-cyan btn-small" style="margin-top:8px;" hx-post="/knowledge" hx-target="#knowledge-rows" hx-swap="beforeend">+ Add</button>
+	</div>
+
+	<div class="rpg-card">
+		<div class="corner-tr"></div><div class="corner-bl"></div>
+		<div class="card-title">Bazaar of Curiosity</div>
+		<table class="edit-table">
+			<thead><tr><th></th><th>Name</th><th>Link</th><th>Description</th><th>Notes</th><th></th></tr></thead>
+			<tbody id="curiosity-rows">
+				{{range .Curiosities}}
+				<tr id="curiosity-{{.ID}}">
+					<td>
+						<select name="icon_emoji" hx-put="/curiosities/{{.ID}}" hx-include="closest tr" hx-trigger="change" hx-swap="none">
+							<option value="✨" {{if eq .IconEmoji "✨"}}selected{{end}}>✨</option>
+							<option value="🔮" {{if eq .IconEmoji "🔮"}}selected{{end}}>🔮</option>
+							<option value="🧙" {{if eq .IconEmoji "🧙"}}selected{{end}}>🧙</option>
+							<option value="🗝️" {{if eq .IconEmoji "🗝️"}}selected{{end}}>🗝️</option>
+							<option value="🛰️" {{if eq .IconEmoji "🛰️"}}selected{{end}}>🛰️</option>
+							<option value="🔬" {{if eq .IconEmoji "🔬"}}selected{{end}}>🔬</option>
+							<option value="🎲" {{if eq .IconEmoji "🎲"}}selected{{end}}>🎲</option>
+							<option value="📜" {{if eq .IconEmoji "📜"}}selected{{end}}>📜</option>
+						</select>
+					</td>
+					<td><input type="text" value="{{.Name}}" name="name" hx-put="/curiosities/{{.ID}}" hx-include="closest tr" hx-trigger="blur" hx-swap="none" placeholder="Name"></td>
+					<td><input type="url" value="{{.Link}}" name="link" hx-put="/curiosities/{{.ID}}" hx-include="closest tr" hx-trigger="blur" hx-swap="none" placeholder="Link"></td>
+					<td><input type="text" value="{{.Description}}" name="description" hx-put="/curiosities/{{.ID}}" hx-include="closest tr" hx-trigger="blur" hx-swap="none" placeholder="Description"></td>
+					<td><input type="text" value="{{.Notes}}" name="notes" hx-put="/curiosities/{{.ID}}" hx-include="closest tr" hx-trigger="blur" hx-swap="none" placeholder="Notes"></td>
+					<td><button type="button" class="btn-small btn-danger" hx-delete="/curiosities/{{.ID}}" hx-target="#curiosity-{{.ID}}" hx-swap="outerHTML swap:0.15s">✕</button></td>
+				</tr>
+				{{end}}
+			</tbody>
+		</table>
+		<button type="button" class="btn-cyan btn-small" style="margin-top:8px;" hx-post="/curiosities" hx-target="#curiosity-rows" hx-swap="beforeend">+ Add</button>
+	</div>
+
+	<div class="rpg-card">
+		<div class="corner-tr"></div><div class="corner-bl"></div>
+		<div class="card-title">Job Applications / Conquest Opportunities</div>
+		<table class="edit-table">
+			<thead><tr><th>Company</th><th>Title</th><th>Application</th><th>CV</th><th>Priority</th><th></th></tr></thead>
+			<tbody id="jobapp-rows">
+				{{range .JobApps}}
+				<tr id="jobapp-{{.ID}}">
+					<td><input type="text" value="{{.Company}}" name="company" hx-put="/jobapps/{{.ID}}" hx-include="closest tr" hx-trigger="blur" hx-swap="none" placeholder="Company"></td>
+					<td><input type="text" value="{{.Title}}" name="title" hx-put="/jobapps/{{.ID}}" hx-include="closest tr" hx-trigger="blur" hx-swap="none" placeholder="Title"></td>
+					<td><input type="url" value="{{.AppURL}}" name="app_url" hx-put="/jobapps/{{.ID}}" hx-include="closest tr" hx-trigger="blur" hx-swap="none" placeholder="Application link"></td>
+					<td><input type="url" value="{{.CVURL}}" name="cv_url" hx-put="/jobapps/{{.ID}}" hx-include="closest tr" hx-trigger="blur" hx-swap="none" placeholder="CV link"></td>
+					<td>
+						<select name="priority" hx-put="/jobapps/{{.ID}}" hx-include="closest tr" hx-trigger="change" hx-target="closest tr" hx-swap="outerHTML">
+							<option value="high" {{if eq .Priority "high"}}selected{{end}}>High</option>
+							<option value="medium" {{if eq .Priority "medium"}}selected{{end}}>Medium</option>
+							<option value="low" {{if eq .Priority "low"}}selected{{end}}>Low</option>
+						</select>
+						<span class="gem gem-{{.Priority}}"></span>
+					</td>
+					<td><button type="button" class="btn-small btn-danger" hx-delete="/jobapps/{{.ID}}" hx-target="#jobapp-{{.ID}}" hx-swap="outerHTML swap:0.15s">✕</button></td>
+				</tr>
+				{{end}}
+			</tbody>
+		</table>
+		<button type="button" class="btn-cyan btn-small" style="margin-top:8px;" hx-post="/jobapps" hx-target="#jobapp-rows" hx-swap="beforeend">+ Add</button>
+	</div>
+
+	<div class="rpg-card span-all">
+		<div class="corner-tr"></div><div class="corner-bl"></div>
+		<div class="card-title">Future Ideas / Prophetic Blueprints</div>
+		<textarea rows="8" name="content" placeholder="Write your future ideas here..."
+			hx-post="/futureideas" hx-trigger="blur" hx-swap="none">{{.FutureIdeas}}</textarea>
+	</div>
+
+</div>
+{{end}}

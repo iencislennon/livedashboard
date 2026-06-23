@@ -1,0 +1,36 @@
+{{define "content"}}
+<div class="back-link" hx-get="/" hx-target="#content" hx-push-url="true">← Dashboard</div>
+
+<div class="hero-image-card" style="margin-bottom:20px;">
+	<img src="/assets/other.jpg" alt="All the other stuff">
+	<div class="overlay"></div>
+	<div class="label">All the Other Stuff</div>
+</div>
+
+<div class="bottom-row">
+	<div class="rpg-card">
+		<div class="corner-tr"></div><div class="corner-bl"></div>
+		<div class="card-title">Notes</div>
+		<textarea rows="12" name="content" placeholder="Anything goes here..."
+			hx-post="/othernotes" hx-trigger="blur" hx-swap="none">{{.Notes}}</textarea>
+	</div>
+
+	<div class="rpg-card">
+		<div class="corner-tr"></div><div class="corner-bl"></div>
+		<div class="card-title">Bookmarks</div>
+		<ul class="bookmark-list" id="bookmark-list">
+			{{range .Bookmarks}}
+			<li id="bookmark-{{.ID}}">
+				<a href="{{.URL}}" target="_blank" rel="noopener">{{.Title}}</a>
+				<button type="button" class="btn-small btn-danger" hx-delete="/bookmarks/{{.ID}}" hx-target="#bookmark-{{.ID}}" hx-swap="outerHTML swap:0.15s">✕</button>
+			</li>
+			{{end}}
+		</ul>
+		<form class="quick-link-form" style="margin-top:10px;" hx-post="/bookmarks" hx-target="#bookmark-list" hx-swap="beforeend" hx-on::after-request="this.reset()">
+			<input type="text" name="title" placeholder="Title" required>
+			<input type="url" name="url" placeholder="https://..." required>
+			<button type="submit" class="btn-cyan">+ Add</button>
+		</form>
+	</div>
+</div>
+{{end}}

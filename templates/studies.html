@@ -1,0 +1,87 @@
+{{define "content"}}
+<div class="back-link" hx-get="/" hx-target="#content" hx-push-url="true">← Dashboard</div>
+<div class="topbar">
+	<div class="title">STUDIES</div>
+</div>
+
+<div class="split-layout">
+	<div class="hero-image-card">
+		<img src="/assets/studies.jpg" alt="Studies">
+		<div class="overlay"></div>
+		<div class="label">Schedule of Classes</div>
+	</div>
+
+	<div class="rpg-card">
+		<div class="corner-tr"></div><div class="corner-bl"></div>
+		<div class="card-title">Classes</div>
+		<table class="edit-table">
+			<thead>
+				<tr><th>Class Name</th><th>Materials</th><th>Exam Dates</th><th>HW Deadlines</th><th></th></tr>
+			</thead>
+			<tbody id="class-rows">
+				{{range .Classes}}
+				<tr id="class-{{.ID}}">
+					<td><input type="text" value="{{.Name}}" name="name" hx-put="/classes/{{.ID}}" hx-include="closest tr" hx-trigger="blur" hx-swap="none" placeholder="Class name"></td>
+					<td>
+						<select name="material_emoji" hx-put="/classes/{{.ID}}" hx-include="closest tr" hx-trigger="change" hx-swap="none">
+							<option value="📘" {{if eq .MaterialEmoji "📘"}}selected{{end}}>📘</option>
+							<option value="🧪" {{if eq .MaterialEmoji "🧪"}}selected{{end}}>🧪</option>
+							<option value="🧮" {{if eq .MaterialEmoji "🧮"}}selected{{end}}>🧮</option>
+							<option value="🎨" {{if eq .MaterialEmoji "🎨"}}selected{{end}}>🎨</option>
+							<option value="🌍" {{if eq .MaterialEmoji "🌍"}}selected{{end}}>🌍</option>
+							<option value="💻" {{if eq .MaterialEmoji "💻"}}selected{{end}}>💻</option>
+							<option value="📐" {{if eq .MaterialEmoji "📐"}}selected{{end}}>📐</option>
+							<option value="🧬" {{if eq .MaterialEmoji "🧬"}}selected{{end}}>🧬</option>
+						</select>
+					</td>
+					<td><input type="text" value="{{.ExamDates}}" name="exam_dates" hx-put="/classes/{{.ID}}" hx-include="closest tr" hx-trigger="blur" hx-swap="none" placeholder="Exam dates"></td>
+					<td><input type="text" value="{{.HwDeadline}}" name="hw_deadline" hx-put="/classes/{{.ID}}" hx-include="closest tr" hx-trigger="blur" hx-swap="none" placeholder="HW deadline"></td>
+					<td><button type="button" class="btn-small btn-danger" hx-delete="/classes/{{.ID}}" hx-target="#class-{{.ID}}" hx-swap="outerHTML swap:0.15s">✕</button></td>
+				</tr>
+				{{end}}
+			</tbody>
+		</table>
+		<button type="button" class="btn-cyan" style="margin-top:10px;" hx-post="/classes" hx-target="#class-rows" hx-swap="beforeend">+ Add Class</button>
+	</div>
+</div>
+
+<div class="bottom-row">
+	<div class="rpg-card">
+		<div class="corner-tr"></div><div class="corner-bl"></div>
+		<div class="card-title">Pomodoro Timer</div>
+		<div class="pomodoro-display" id="pomodoro-display">25:00</div>
+		<div class="pomodoro-controls">
+			<button type="button" class="btn-cyan" onclick="pomodoroStart()">Start</button>
+			<button type="button" onclick="pomodoroPause()">Pause</button>
+			<button type="button" class="btn-danger" onclick="pomodoroReset()">Reset</button>
+		</div>
+	</div>
+
+	<div class="rpg-card">
+		<div class="corner-tr"></div><div class="corner-bl"></div>
+		<div class="card-title">GPA Calculator</div>
+		<div id="gpa-rows"></div>
+		<button type="button" class="btn-cyan btn-small" onclick="gpaAddRow()">+ Add Course</button>
+		<div class="gpa-result" id="gpa-result">GPA: --</div>
+	</div>
+</div>
+
+<div class="rpg-card">
+	<div class="corner-tr"></div><div class="corner-bl"></div>
+	<div class="card-title">Quick Links</div>
+	<div class="quick-links-bar" id="quicklinks-list">
+		{{range .QuickLinks}}
+		<div class="quick-link-chip" id="quicklink-{{.ID}}">
+			<a href="{{.URL}}" target="_blank" rel="noopener">{{.Label}}</a>
+			<span class="x" hx-delete="/quicklinks/{{.ID}}" hx-target="#quicklink-{{.ID}}" hx-swap="outerHTML swap:0.15s">✕</span>
+		</div>
+		{{end}}
+	</div>
+	<form class="quick-link-form" style="margin-top:10px;" hx-post="/quicklinks" hx-target="#quicklinks-list" hx-swap="beforeend" hx-on::after-request="this.reset()">
+		<input type="hidden" name="page" value="studies">
+		<input type="text" name="label" placeholder="Label" required>
+		<input type="url" name="url" placeholder="https://..." required>
+		<button type="submit" class="btn-cyan">+ Add Link</button>
+	</form>
+</div>
+{{end}}
